@@ -5,7 +5,7 @@ import re
 # get the start time
 st = time.time()
 
-string = open("test.txt", "r").read()
+string = open("input.txt", "r").read()
 arr = string.split(os.linesep)
 arrLen = len(arr)
 knownCards = {}
@@ -15,16 +15,15 @@ def check_cards(cards):
 	won_cards = []
 	for line in cards:
 		matches = 0
-		card_num = int(line.split(": ")[0].split("Card ")[1]) - 1
+		card_num = int(re.split(r"Card +", line.split(": ")[0])[1]) - 1
 		if str(card_num) in knownCards.keys():
-			print(card_num)
 			for item in knownCards[str(card_num)]:
 				won_cards.append(item)
 			continue
 		knownCards[str(card_num)] = []
-		temp_line = line.split(": ")[1]
-		winning_nums = temp_line.split(" | ")[0]
-		have_nums = temp_line.split(" | ")[1]
+		temp_line = re.split(r": +", line)[1]
+		winning_nums = re.split(r" +\| +", temp_line)[0]
+		have_nums = re.split(r" +\| +", temp_line)[1]
 		for num in re.split(r"\s+", winning_nums):
 			if num in re.split(r"\s+", have_nums):
 				matches += 1
