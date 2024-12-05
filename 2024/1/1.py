@@ -8,8 +8,8 @@ out = 0
 
 for x in arr:
 	if x != "":
-		left.append(int(x.split(" ")[0]))
-		right.append(int(x.split(" ")[1]))
+		left.append(int(x.split("   ")[0]))
+		right.append(int(x.split("   ")[1]))
 
 left.sort()
 right.sort()
