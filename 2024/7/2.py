@@ -37,7 +37,7 @@ def all_op(amount):
 	return result
 
 
-string = open("test2.txt", "r").read()
+string = open("input.txt", "r").read()
 arr = string.split(os.linesep)
 out = 0
 calculations = {}
