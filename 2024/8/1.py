@@ -72,8 +72,7 @@ def to_coords(index, map):
 
 
 def check(antinode, freq):
-	if is_inside(antinode) and arr[antinode[1]][antinode[0]] != freq:
-		if antinode in antinodes: return
+	if is_inside(antinode) and from_coords(antinode, arr) != freq and not antinode in antinodes:
 		antinodes.append(antinode)
 		paint(antinode, (255, 0, 0), (0, 255, 0), "#", str(antinodes.count(antinode)), freq)
 
