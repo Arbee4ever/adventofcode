@@ -1,10 +1,8 @@
-from functools import lru_cache
-#Thanks to https://github.com/RD-Dev-29/advent_of_code_24/blob/main/code_files/day11.py for showing me lru_cache
-
 string = open("input.txt", "r").read()
 arr = [int(x) for x in string.split(" ")]
 out = 0
 cache = {}
+cache2 = {}
 
 
 def blink(stone):
@@ -21,16 +19,19 @@ def blink(stone):
 	return val
 
 
-@lru_cache(maxsize=None)
 def blink_for_stone(stone, blinks):
 	if blinks == 0:
 		return 1
+
+	if str(stone) + "," + str(blinks) in cache2:
+		return cache2[str(stone) + "," + str(blinks)]
 
 	count = 0
 	new_stones = blink(stone)
 	for new_stone in new_stones:
 		count += blink_for_stone(new_stone, blinks - 1)
 
+	cache2[str(stone) + "," + str(blinks)] = count
 	return count
 
 
