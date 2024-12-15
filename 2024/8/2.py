@@ -23,9 +23,9 @@ def paint(position, background, foreground, char, char2="", char3=""):
 	y2 = y1 + multiplier
 	shape = [(x1 + 2, y1 + 2), (x2 - 2, y2 - 2)]
 	img.rectangle(shape, background, width=0)
-	font = ImageFont.truetype("JetBrainsMono-Medium.ttf", multiplier)
+	font = ImageFont.truetype("../../JetBrainsMono-Medium.ttf", multiplier)
 	img.text((x1 + multiplier / 2, y1 + multiplier / 2), char, foreground, font, "mm")
-	font = ImageFont.truetype("JetBrainsMono-Medium.ttf", multiplier / 2)
+	font = ImageFont.truetype("../../JetBrainsMono-Medium.ttf", multiplier / 2)
 	img.text((x1, y1), char2, foreground, font, "lt")
 	img.text((x2, y2), char3, foreground, font, "rb")
 
