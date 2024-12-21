@@ -35,7 +35,7 @@ class Cell:
 		self.position = coords
 
 	def move(self, vector: Vector2):
-		return False
+		return
 
 	def movable(self, vector: Vector2):
 		return False
@@ -47,6 +47,8 @@ class Robot(Cell):
 	def move(self, vector: Vector2):
 		movable = self.movable(vector)
 		if movable:
+			next_cell = house.get(self.position + vector)
+			next_cell.move(vector)
 			house.move(self.position, vector)
 			self.position += vector
 		return movable
@@ -56,39 +58,58 @@ class Robot(Cell):
 
 	def movable(self, vector: Vector2):
 		next_cell = house.get(self.position + vector)
+		movable = False
+		movable_other = True
 		if isinstance(next_cell, Cell):
-			return next_cell.move(vector)
-		return False
+			movable = next_cell.movable(vector)
+			if str(vector) in up_down and isinstance(next_cell, Box):
+				if next_cell.left is None:
+					movable_other = next_cell.right.movable(vector)
+				else:
+					movable_other = next_cell.left.movable(vector)
+		if movable_other and movable:
+			return True
+		else:
+			return False
 
 	def __str__(self):
+		return self.c
 		return "\u001B[32m" + self.c + "\u001B[0m"
 
 class Box(Cell):
 	def move(self, vector: Vector2):
-		movable = self.movable(vector)
-		up_down = [str(Vector2(0, 1)), str(Vector2(0, -1))]
-		if movable and str(vector) in up_down:
+		next_cell = house.get(self.position + vector)
+		next_cell.move(vector)
+		if str(vector) in up_down:
 			if self.left is None:
-				movable = self.right.movable(vector)
+				next_cell_other = house.get(self.right.position + vector)
 			else:
-				movable = self.left.movable(vector)
-			if movable:
-				if self.left is None:
-					house.move(self.right.position, vector)
-					self.right.position += vector
-				else:
-					house.move(self.left.position, vector)
-					self.left.position += vector
-		if movable:
-			house.move(self.position, vector)
-			self.position += vector
-		return movable
+				next_cell_other = house.get(self.left.position + vector)
+			next_cell_other.move(vector)
+			if self.left is None:
+				house.move(self.right.position, vector)
+				self.right.position += vector
+			else:
+				house.move(self.left.position, vector)
+				self.left.position += vector
+		house.move(self.position, vector)
+		self.position += vector
 
 	def movable(self, vector: Vector2):
 		next_cell = house.get(self.position + vector)
+		movable = []
 		if isinstance(next_cell, Cell):
-			return next_cell.move(vector)
-		return False
+			movable.append(next_cell.movable(vector))
+			if str(vector) in up_down:
+				if self.left is None:
+					next_cell_other = house.get(self.right.position + vector)
+				else:
+					next_cell_other = house.get(self.left.position + vector)
+				movable.append(next_cell_other.movable(vector))
+		if all(movable):
+			return True
+		else:
+			return False
 
 	def __str__(self):
 		if self.left is None:
@@ -97,7 +118,7 @@ class Box(Cell):
 
 class Air(Cell):
 	def move(self, vector: Vector2):
-		return True
+		return
 
 	def movable(self, vector: Vector2):
 		return True
@@ -107,7 +128,7 @@ class Air(Cell):
 
 class Wall(Cell):
 	def move(self, vector: Vector2):
-		return False
+		return
 
 	def movable(self, vector: Vector2):
 		return False
@@ -144,7 +165,7 @@ class House:
 		return string
 
 def to_coords(index: int):
-	return Vector2(int(index % len(houseRaw[0])), int(index / len(houseRaw)))
+	return Vector2(int(index % len(houseRaw[0])), int(index / len(houseRaw[0])))
 
 string = open("input.txt", "r").read()
 arr = string.split(os.linesep * 2)
@@ -177,21 +198,24 @@ for i, char in enumerate("".join(houseRaw)):
 	house.put(pos, box_left)
 	house.put(pos + Vector2(1, 0), box_right)
 
+print(house)
 directions = {
 	"^": Vector2(0, -1),
 	">": Vector2(1, 0),
 	"v": Vector2(0, 1),
 	"<": Vector2(-1, 0),
 }
-for i, move in enumerate(moves, start=1):
+up_down = [str(Vector2(0, 1)), str(Vector2(0, -1))]
+for i, move in enumerate(moves):
+	#print("Move", i, move + ":")
 	dir = directions[move]
 	pos = Vector2(robot.position.x, robot.position.y)
 	robot.move(dir)
 	robot.set_dir(move)
-	#print("Move", i, move + ":")
 	#print(house)
 
 for box in boxes:
 	out += box.position.y * 100 + box.position.x
+
 print(house)
 print("Result: " + str(out))
